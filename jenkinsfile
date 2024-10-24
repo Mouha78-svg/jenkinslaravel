@@ -1,0 +1,38 @@
+groovy pipeline{
+    agent any
+    stages{
+        stage('Checkout'){
+            steps{
+                gitbranche: 'main',url:''
+            }
+        }
+        stage('install Dependencies'){
+            steps{
+                bat 'composer install'
+            }
+        }
+        stage('Run Tests'){
+            steps{
+                bat 'php artisan test'
+            }
+        }
+        stage('Static Analysis'){
+            steps{
+                bat 'vendor/bin/phpcs --standar=PSR2app/'
+            }
+        }
+        stage('Build'){
+            steps{
+                //test build
+                echo 'build test';
+            }
+        }
+    }
+
+    post{
+        always{
+            archiveArtifactsartifacts: '**/storage/logs/*.log',allowEmptyArchive: true
+            junit 'tests/_output/*.html'
+        }
+    }
+}
